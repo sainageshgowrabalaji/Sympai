@@ -318,3 +318,57 @@ def test_the_backup_note_is_said_once_per_conversation():
     assert "backup model" in first.content
     assert second.content == "Is it worse at night?"
     assert second.response_metadata["sympai_backup"] is True  # still marked, just not repeated
+
+
+class BrokenRequest(Exception):
+    """Shaped like Groq's 400 when the model writes a tool call it cannot parse."""
+
+    status_code = 400
+
+    def __init__(self):
+        super().__init__("Error code: 400 - tool_use_failed, Failed to call a function")
+
+
+def test_a_broken_lookup_request_is_tried_again():
+    calls = {"n": 0}
+
+    def flaky(_messages):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise BrokenRequest()
+        return AIMessage("Many plans let you book a neurologist directly. What is your ZIP code?")
+
+    graph = build_graph(brain=RunnableLambda(flaky), checkpointer=InMemorySaver())
+    result = graph.invoke({"messages": [HumanMessage("How do I get to the neurology department here?")]},
+                          {"configurable": {"thread_id": "retry"}})
+    assert result["messages"][-1].content.startswith("Many plans let you book")
+    assert calls["n"] == 2
+
+
+def test_two_broken_requests_get_an_answer_without_lookups():
+    def always_broken(_messages):
+        raise BrokenRequest()
+
+    heard = {}
+
+    def text_only(messages):
+        heard["note"] = messages[0].content
+        return AIMessage("You can ask your primary care doctor for a referral. What is your ZIP code?")
+
+    graph = build_graph(brain=RunnableLambda(always_broken), closer=RunnableLambda(text_only), checkpointer=InMemorySaver())
+    result = graph.invoke({"messages": [HumanMessage("neurology?")]}, {"configurable": {"thread_id": "no-tools"}})
+    reply = result["messages"][-1]
+    assert reply.content.startswith("You can ask your primary care doctor")
+    assert reply.response_metadata["sympai_no_tools"] is True and not reply.tool_calls
+    assert "lookups are not working" in heard["note"]
+
+
+def test_when_every_try_fails_the_person_still_gets_an_answer_with_safety_lines():
+    def always_broken(_messages):
+        raise BrokenRequest()
+
+    graph = build_graph(brain=RunnableLambda(always_broken), checkpointer=InMemorySaver())
+    result = graph.invoke({"messages": [HumanMessage("neurology?")]}, {"configurable": {"thread_id": "sorry"}})
+    reply = result["messages"][-1]
+    assert reply.response_metadata["sympai_error"] is True
+    assert "send your message again" in reply.content and "911" in reply.content and "988" in reply.content

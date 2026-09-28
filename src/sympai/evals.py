@@ -145,9 +145,13 @@ def play_turn(graph, config, text: str) -> Turn:
             actions.append("used up its lookup budget and answered with what it had")
         if meta.get("sympai_backup"):
             actions.append("the 120b model was out of its daily allowance, so the 20b backup answered")
+        if meta.get("sympai_error"):
+            raise RuntimeError("The model service failed on every try. Run this case again.")
         if meta.get("sympai_busy"):
             # Not SympAI's fault, and grading a "come back later" note would say nothing about it.
             raise RuntimeError("Groq's free allowance ran out for both models. Run this case again later.")
+        if meta.get("sympai_no_tools"):
+            actions.append("its lookup request came out broken twice, so it answered without looking anything up")
         if meta.get("sympai_trimmed_question"):
             actions.append("asked two questions, and code kept the first")
         if meta.get("sympai_raised_care"):

@@ -114,8 +114,12 @@ def show(node: str, update: dict) -> None:
             print("   . lookup budget used up, so it answers with what it has")
         if reply.response_metadata.get("sympai_backup"):
             print("   . the 120b model is out of its free allowance, so the 20b backup answered")
-        if reply.response_metadata.get("sympai_busy"):
+        if reply.response_metadata.get("sympai_error"):
+            print("   . the model service kept failing, so SympAI said sorry instead of crashing")
+        elif reply.response_metadata.get("sympai_busy"):
             print("   . both models are out of their free allowance for now")
+        if reply.response_metadata.get("sympai_no_tools"):
+            print("   . its lookup request came out broken twice, so it answered without looking anything up")
         print(f"   . coordinator used {tokens} tokens")
         if not reply.tool_calls:
             print(f"\nSympAI: {reply.content}")
