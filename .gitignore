@@ -1,0 +1,26 @@
+# secrets never go to git
+.env
+
+# python
+.venv/
+__pycache__/
+*.pyc
+
+# langgraph dev server state
+.langgraph_api/
+
+# mac
+.DS_Store
+
+# test runner cache
+.pytest_cache/
+
+# real conversations, kept on this laptop only
+data/
+
+# trained models and their training checkpoints, rebuilt with scripts/train_triage.py
+models/
+checkpoints/
+
+# scenario runs, rebuilt each time
+evals/results/

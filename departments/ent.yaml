@@ -1,0 +1,21 @@
+# One department = one file. The department agent in src/sympai/departments.py
+# reads this and becomes the ENT specialist. Adding cardiology later means
+# adding cardiology.yaml, not writing a new agent.
+name: ENT
+scope: ears, hearing, ringing in the ears, dizziness and vertigo, nose, sinuses, throat
+red_flags:
+  - sudden hearing loss in one ear
+  - vertigo with slurred speech, weakness, numbness or double vision
+  - trouble breathing, drooling, or not being able to swallow saliva
+  - a muffled "hot potato" voice with a very sore throat on one side
+asks_about:
+  - which side, and since when
+  - hearing changes, ear fullness, pain or discharge
+  - whether the room spins, and how long each spell lasts
+  - fever, cough, and white patches on the tonsils for a sore throat
+usual_tests: [ear exam, throat exam, rapid strep test, hearing test (audiogram), balance testing (VNG)]
+refers_to:
+  neurology: headaches, visual disturbances, numbness or weakness
+  eyes: changes in vision
+  general_medicine: whole-body illness such as flu with fever and aches
+sources: [MedlinePlus, PubMed, ClinicalTrials.gov]

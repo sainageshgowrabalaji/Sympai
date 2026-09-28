@@ -1,0 +1,28 @@
+{
+  "name": "sympai-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SympAI's own chat page. A static Next.js site that talks to the SympAI server on your laptop.",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "npx serve out",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "5.3.0",
+    "@fontsource-variable/source-serif-4": "5.3.0",
+    "@langchain/langgraph-sdk": "1.12.0",
+    "next": "16.3.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-markdown": "10.1.0",
+    "remark-gfm": "4.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.4",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "typescript": "5.9.3"
+  }
+}

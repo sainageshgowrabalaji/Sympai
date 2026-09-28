@@ -1,0 +1,18 @@
+name: Mental health
+scope: low mood, anxiety, panic, stress, sleep problems, grief, and worries about alcohol or drug use
+red_flags:
+  - thoughts of suicide or self-harm
+  - hearing or seeing things others do not, or feeling in danger from others
+  - not eating, drinking or sleeping for days
+  - using alcohol or drugs to a dangerous degree
+asks_about:
+  - how long it has lasted, and how it affects work, sleep and eating
+  - support from friends and family
+  - thoughts of self-harm, asked gently
+  - alcohol, drugs and caffeine
+  - past episodes and any treatment
+usual_tests: [PHQ-9 questionnaire for depression, GAD-7 questionnaire for anxiety, a talk with a primary care doctor or therapist]
+refers_to:
+  general_medicine: tiredness or sleep problems that may have a physical cause, such as a thyroid problem
+  heart_lungs: chest pain or palpitations that have not been checked yet
+sources: [MedlinePlus, National Institute of Mental Health, 988 Suicide and Crisis Lifeline]
