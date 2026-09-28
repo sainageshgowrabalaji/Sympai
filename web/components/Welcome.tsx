@@ -69,7 +69,16 @@ export function Welcome({ owner, apiUrl, initialKey, acknowledged, error, busy, 
 
           <details className="advanced">
             <summary>Server address</summary>
-            <input type="url" spellCheck={false} value={url} onChange={(e) => setUrl(e.target.value)} />
+            <input
+              type="text"
+              inputMode="url"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
+              placeholder="https://your-mac.tail1234.ts.net"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+            />
             <span className="field-help">Only change this if {owner} sent you a different address.</span>
           </details>
 

@@ -39,8 +39,13 @@ export function makeClient(apiUrl: string, apiKey: string) {
   return new Client({ apiUrl, apiKey, callerOptions: { maxRetries: 1 } });
 }
 
+// People paste addresses without "https://", like your-mac.tail1234.ts.net.
+// The laptop itself is plain http, and every public address is https.
 export function cleanUrl(url: string) {
-  return url.trim().replace(/\/+$/, "");
+  const trimmed = url.trim().replace(/\/+$/, "");
+  if (!trimmed || /^https?:\/\//i.test(trimmed)) return trimmed;
+  const local = /^(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$/i.test(trimmed);
+  return `${local ? "http" : "https"}://${trimmed}`;
 }
 
 export async function isOnline(apiUrl: string): Promise<boolean> {

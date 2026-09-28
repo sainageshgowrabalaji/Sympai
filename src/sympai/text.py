@@ -44,8 +44,23 @@ def _plain(text: str) -> str:
     return _HYPHENS.sub("-", text)
 
 
+# The backup model once wrote "you can find one with `find_clinicians` if you
+# give a ZIP code". Tool names mean nothing to a person, so code swaps them for
+# plain words, whatever the prompt said.
+_TOOL_WORDS = {
+    "find_clinicians": "a clinician search",
+    "care_options": "a care search",
+    "search_medlineplus": "MedlinePlus",
+    "search_pubmed": "a PubMed search",
+    "search_clinical_trials": "a ClinicalTrials.gov search",
+    "consult_department": "a specialist consult",
+}
+_TOOL_NAMES = re.compile(r"`?\b(" + "|".join(_TOOL_WORDS) + r")\b(\(\))?`?")
+
+
 def clean_answer(text: str) -> str:
-    return _TRAINING_CITATIONS.sub("", text or "").strip()
+    text = _TRAINING_CITATIONS.sub("", text or "")
+    return _TOOL_NAMES.sub(lambda m: _TOOL_WORDS[m.group(1)], text).strip()
 
 
 # In three test runs the coordinator kept asking two questions at once, like

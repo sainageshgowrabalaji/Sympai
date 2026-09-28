@@ -22,6 +22,7 @@ difference is shared state. Every node reads the whole case and returns only
 what it changed, and a reducer decides how that change merges in.
 """
 
+import logging
 import operator
 import os
 import re
@@ -90,6 +91,12 @@ def status_line(tool_calls: list[dict]) -> str:
     return f"_{joined[0].upper()}{joined[1:]}..._"
 
 
+SORRY_REPLY = """Something went wrong on my side while writing that answer, so I could not finish it. Please send your message again.
+
+If this cannot wait, call your doctor's office or go to urgent care today. For chest pain, trouble breathing, signs of a stroke or anything that feels like an emergency, call 911. If you are thinking about harming yourself, call or text 988."""
+NO_TOOLS_NOTE = "Your lookups are not working for this reply. Do not try to use them. Answer with what you already know, or ask your next question, and say plainly if there is something you could not check."
+log = logging.getLogger("sympai")
+
 BUSY_REPLY = """SympAI has used up its free allowance for now, so it cannot give you a careful answer. Please try again in about {wait}.
 
 If this cannot wait, call your doctor's office or go to urgent care today. For chest pain, trouble breathing, signs of a stroke or anything that feels like an emergency, call 911. If you are thinking about harming yourself, call or text 988."""
@@ -140,6 +147,8 @@ Places and costs
 To suggest real doctors, use find_clinicians with the kind of doctor and their ZIP code. For urgent care, pharmacies, low-cost clinics or telehealth, use care_options. Ask for the ZIP code if you do not have it.
 Name a clinic, doctor, address or phone number only if one of those tools returned it, and copy it exactly. Never name a distance, transit route, app or price.
 Always add that they should check with their insurer or the office that the doctor takes their plan.
+If they ask how to see a specialist, like a neurologist, explain the usual path. Many plans let people book a specialist directly, while HMO plans need a referral from a primary care doctor first. The plan's member services or website says which applies. Then offer to find that kind of doctor near their ZIP code.
+Never show the names of your tools, like find_clinicians. Ask for what you need in plain words, like their ZIP code.
 Never state facts about the person's own insurance plan, such as its deductible, coinsurance or referral rules, even when the plan's name seems to suggest them. Explain what the terms mean, and say the real numbers are in the plan's Summary of Benefits and Coverage and with member services, on the number on their card.
 
 Sources
@@ -411,6 +420,21 @@ def is_rate_limit(error: Exception) -> bool:
     return getattr(error, "status_code", None) == 429 or "rate limit" in str(error).lower()
 
 
+def is_bad_generation(error: Exception) -> bool:
+    """Groq answers 400 when the model writes a broken lookup request it cannot read.
+
+    In the visual snow test the 20b backup did this on "How do I go to the
+    neurology department here?", and the whole turn crashed with no reply.
+    Each generation is different, so a second try usually works.
+    """
+    return getattr(error, "status_code", None) == 400
+
+
+def is_server_side(error: Exception) -> bool:
+    status = getattr(error, "status_code", None)
+    return isinstance(status, int) and status >= 500
+
+
 def wait_seconds(error: Exception, default: float = 60.0) -> float:
     """Read Groq's "Please try again in 14m36.96s" out of the error."""
     match = re.search(r"try again in ((?:\d+h)?(?:\d+m)?(?:[\d.]+s)?)", str(error))
@@ -457,37 +481,54 @@ def make_coordinator(brain, closer, chart_store=None, backup=None, backup_closer
 
     def think(state: Consult, history, prompt: str) -> AIMessage:
         closing = tool_rounds_this_turn(history) >= MAX_TOOL_ROUNDS
-        messages = [SystemMessage(prompt + ("\n\n" + BUDGET_NOTE if closing else "")), *history]
-        choices = [(closer if closing else brain, False)]
+        with_tools = [SystemMessage(prompt), *history]
+        without_tools = [SystemMessage(prompt + "\n\n" + (BUDGET_NOTE if closing else NO_TOOLS_NOTE)), *history]
+        choices = [(brain, closer, False)]
         if backup is not None:
-            choices.append((backup_closer or backup if closing else backup, True))
-        wait = 0.0
-        for model, is_backup in choices:
+            choices.append((backup, backup_closer or backup, True))
+        wait, went_wrong = 0.0, False
+        for tools_model, text_model, is_backup in choices:
             if not is_backup and breaker.is_open():
                 wait = breaker.remaining()
                 continue
-            try:
-                answer = model.invoke(messages)
-            except Exception as error:
-                if not is_rate_limit(error):
-                    raise
-                if not is_backup:
-                    breaker.trip(error)
-                wait = max(wait, wait_seconds(error))
-                continue
-            flags = {"sympai_backup": True} if is_backup else {}
-            if closing:
-                # A fresh message with no tool calls, whatever the model tried, so
-                # the turn is guaranteed to end here. The flag is only for display.
-                return AIMessage(
-                    content=answer.content,
-                    id=answer.id,
-                    usage_metadata=answer.usage_metadata,
-                    additional_kwargs=answer.additional_kwargs,
-                    response_metadata={**answer.response_metadata, **flags, "sympai_budget_closed": True},
-                )
-            answer.response_metadata = {**answer.response_metadata, **flags}
-            return answer
+            # Normally the model may look things up, with one retry if its request
+            # comes out broken, then a last try with lookups switched off.
+            attempts = [(text_model, True)] if closing else [(tools_model, False), (tools_model, False), (text_model, True)]
+            for model, text_only in attempts:
+                try:
+                    answer = model.invoke(without_tools if text_only else with_tools)
+                except Exception as error:
+                    if is_rate_limit(error):
+                        if not is_backup:
+                            breaker.trip(error)
+                        wait = max(wait, wait_seconds(error))
+                        break  # this model is out, go to the next one
+                    if is_server_side(error):
+                        log.warning("coordinator model failed on Groq's side: %s", error)
+                        went_wrong = True
+                        break
+                    if is_bad_generation(error):
+                        log.warning("coordinator wrote a request Groq could not read, trying again: %s", error)
+                        went_wrong = True
+                        continue
+                    raise  # anything else is a bug in our code, and hiding it would make it harder to find
+                flags = {"sympai_backup": True} if is_backup else {}
+                if text_only:
+                    # A fresh message with no tool calls, whatever the model tried, so
+                    # the turn is guaranteed to end here. The flag is only for display.
+                    flags["sympai_budget_closed" if closing else "sympai_no_tools"] = True
+                    return AIMessage(
+                        content=answer.content,
+                        id=answer.id,
+                        usage_metadata=answer.usage_metadata,
+                        additional_kwargs=answer.additional_kwargs,
+                        response_metadata={**answer.response_metadata, **flags},
+                    )
+                answer.response_metadata = {**answer.response_metadata, **flags}
+                return answer
+        if went_wrong:
+            # Never silence. An honest "please send that again", with the safety lines.
+            return AIMessage(content=SORRY_REPLY, response_metadata={"sympai_busy": True, "sympai_error": True})
         # Both models are out. An honest "not now", with the safety lines, beats a crash.
         return AIMessage(content=BUSY_REPLY.format(wait=say_wait(wait)), response_metadata={"sympai_busy": True})
 

@@ -118,3 +118,10 @@ def test_a_kind_opening_line_does_not_hide_two_questions():
         "I'm sorry you've been dealing with uncomfortable vertigo and tinnitus, it sounds frustrating.\n\n"
         "When did the most recent vertigo episodes start?"
     )
+
+
+def test_tool_names_never_reach_the_person():
+    written = "Use a local specialist. You can find one with `find_clinicians` if you give a ZIP code."
+    assert clean_answer(written) == "Use a local specialist. You can find one with a clinician search if you give a ZIP code."
+    assert clean_answer("I ran search_pubmed() for you.") == "I ran a PubMed search for you."
+    assert clean_answer("See the care options below.") == "See the care options below."  # plain words stay
