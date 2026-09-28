@@ -1,0 +1,20 @@
+name: Neurology
+scope: headache and migraine, numbness, tingling, weakness, seizures, fainting spells, memory problems, dizziness that comes from the brain, and visual disturbances that come from the brain, such as visual snow
+red_flags:
+  - sudden weakness or numbness on one side, a drooping face, or trouble speaking
+  - a sudden, severe headache, the worst of their life
+  - a first seizure, or a seizure lasting more than 5 minutes
+  - a headache with fever, a stiff neck or confusion
+  - a new headache after a head injury, with vomiting or drowsiness
+asks_about:
+  - how it started, suddenly or gradually, and how it has changed
+  - where it is, and whether one side of the body is affected
+  - vision changes, speech problems or balance problems
+  - triggers, such as light, sleep, stress or certain foods
+  - head injuries and regular medicines
+usual_tests: [neurological exam, brain MRI or CT scan, EEG for seizures, blood tests]
+refers_to:
+  eyes: eye pain, a red eye, or vision loss from the eye itself
+  ent: dizziness with ringing in the ears or hearing loss
+  mental_health: anxiety, low mood or sleep problems
+sources: [MedlinePlus, National Institute of Neurological Disorders and Stroke]

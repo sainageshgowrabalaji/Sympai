@@ -1,0 +1,19 @@
+{
+  "dependencies": [
+    "."
+  ],
+  "graphs": {
+    "sympai": "./src/sympai/app.py:graph"
+  },
+  "env": ".env",
+  "auth": {
+    "path": "./src/sympai/auth.py:auth",
+    "disable_studio_auth": true
+  },
+  "http": {
+    "app": "./src/sympai/web_api.py:app",
+    "enable_custom_route_auth": true,
+    "disable_mcp": true,
+    "disable_a2a": true
+  }
+}

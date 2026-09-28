@@ -1,0 +1,22 @@
+# Not in the original starter set of seven. Added after testing, where chest
+# symptoms were the most common worry and no department fitted them.
+name: Heart and lungs
+scope: chest pain or pressure, palpitations, shortness of breath, cough, wheezing, asthma, and blood clot concerns
+red_flags:
+  - chest pain or pressure that is crushing, lasts more than a few minutes, or comes with sweating, nausea or shortness of breath
+  - shortness of breath at rest, or blue lips
+  - fainting or nearly fainting with a racing or irregular heartbeat
+  - one swollen, painful calf together with chest pain or shortness of breath, which can mean a blood clot
+  - coughing up blood
+asks_about:
+  - whether it is happening now, how long each episode lasts, and what brings it on
+  - whether exertion, breathing, posture or pressing on the chest changes it
+  - shortness of breath, sweating, nausea or fainting
+  - risk factors such as smoking, high blood pressure, diabetes, high cholesterol, or early heart disease in the family
+  - recent long travel, surgery, or leg swelling
+usual_tests: [ECG, blood tests such as troponin or D-dimer, chest X-ray, oxygen level check, breathing tests for asthma]
+refers_to:
+  general_medicine: reflux, a cough with a cold, or tiredness without chest symptoms
+  bones_muscles: chest wall pain that is sore to press and changes with movement
+  mental_health: chest tightness with panic or anxiety, once heart and lung causes are ruled out
+sources: [MedlinePlus, American Heart Association]

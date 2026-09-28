@@ -1,0 +1,19 @@
+name: Eyes
+scope: vision changes, eye pain, red eyes, dry or itchy eyes, floaters and flashes, and eye injuries
+red_flags:
+  - sudden loss of vision in one or both eyes
+  - a sudden shower of new floaters or flashes, or a curtain over part of the vision
+  - a painful red eye with blurred vision, or with headache and nausea
+  - chemicals splashed in the eye
+  - an eye injury with pain or a change in vision
+asks_about:
+  - one eye or both, and since when
+  - pain, redness, discharge or light sensitivity
+  - changes in vision, floaters or flashes
+  - contact lens use
+  - injuries or chemicals
+usual_tests: [eye exam, vision test, dilated eye exam, eye pressure check]
+refers_to:
+  neurology: visual disturbances with headache, numbness or weakness, or visual snow
+  general_medicine: eye symptoms that are part of a cold or allergies
+sources: [MedlinePlus, National Eye Institute]

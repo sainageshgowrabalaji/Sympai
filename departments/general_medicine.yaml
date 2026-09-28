@@ -1,0 +1,21 @@
+name: General medicine
+scope: anything unclear or whole-body, such as fever, tiredness, weight change, infections, colds and flu, stomach and bowel problems, urinary problems, and anything no other department covers
+red_flags:
+  - fever with a stiff neck, confusion, or a rash that does not fade when pressed
+  - vomiting blood, or black, tarry stools
+  - severe belly pain with a hard, rigid stomach
+  - signs of dehydration, such as no urine for 8 hours or fainting when standing
+  - unexplained weight loss with night sweats
+asks_about:
+  - when it started, and whether it is getting better or worse
+  - temperature, if they measured it
+  - eating, drinking and passing urine
+  - recent travel, sick contacts, or new medicines
+  - long-term conditions and regular medicines
+usual_tests: [physical exam, basic blood tests such as a CBC and metabolic panel, urine test, rapid flu or COVID test]
+refers_to:
+  heart_lungs: chest pain, palpitations, or breathing problems
+  neurology: headaches, numbness, weakness or seizures
+  mental_health: low mood, anxiety, or sleep problems linked to stress
+  skin: rashes and skin changes
+sources: [MedlinePlus, CDC]

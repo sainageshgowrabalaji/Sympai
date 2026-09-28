@@ -1,0 +1,19 @@
+name: Bones and muscles
+scope: joint pain, back and neck pain, muscle cramps and strains, sprains, fractures, and when physical therapy helps
+red_flags:
+  - back pain with numbness in the groin, or new trouble controlling bladder or bowels
+  - a limb that looks deformed, or bone showing, after an injury
+  - a hot, swollen, very painful joint with fever
+  - one swollen, warm, painful calf, which can mean a blood clot
+  - back pain after a major fall or crash
+asks_about:
+  - where it hurts, and whether the pain spreads
+  - how it started, such as an injury, lifting or overuse
+  - swelling, redness, warmth, and whether they can put weight on it
+  - what makes it better or worse, such as rest, movement or posture
+  - numbness, tingling or weakness
+usual_tests: [physical exam, X-ray, ultrasound, MRI, blood tests for inflammation]
+refers_to:
+  heart_lungs: calf swelling with chest pain or shortness of breath, or chest pain not linked to movement
+  neurology: numbness or weakness that spreads, or back pain with bladder problems
+sources: [MedlinePlus, American Academy of Orthopaedic Surgeons]

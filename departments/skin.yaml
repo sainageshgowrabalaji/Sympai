@@ -1,0 +1,18 @@
+name: Skin
+scope: rashes, itching, hives, acne, moles and skin spots, wounds and burns, and hair and nail problems
+red_flags:
+  - hives with swelling of the lips, tongue or throat, or trouble breathing
+  - a rash with fever that does not fade when pressed
+  - a red, hot, spreading area of skin with fever
+  - blistering or peeling over a large area, especially after a new medicine
+  - a mole that is changing in size, shape or color, or bleeding
+asks_about:
+  - where it is, and whether it is spreading
+  - itching, pain or fever
+  - new medicines, foods, soaps or plants
+  - how long it has been there, and whether it is changing
+usual_tests: [skin exam, close look at moles with a dermatoscope, skin swab or scraping, biopsy]
+refers_to:
+  general_medicine: rashes that come with a fever or feeling unwell
+  heart_lungs: hives with trouble breathing
+sources: [MedlinePlus, American Academy of Dermatology]
